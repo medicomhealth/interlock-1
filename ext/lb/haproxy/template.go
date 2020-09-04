@@ -49,7 +49,7 @@ frontend http-default
     http-request set-header X-Forwarded-Port %[dst_port]
     http-request add-header X-Forwarded-Proto https if { ssl_fc }
     balance {{ $host.BalanceAlgorithm }}
-    {{ range $option := $host.BackendOptions }}option {{ $option }}
+    {{ range $option := $host.BackendOptions }}{{ $option }}
     {{ end }}
     {{ if $host.Check }}option {{ $host.Check }}{{ end }}
     {{ if $host.SSLOnly }}redirect scheme https code 301 if !{ ssl_fc }{{ end }}

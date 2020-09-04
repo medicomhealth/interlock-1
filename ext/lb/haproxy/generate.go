@@ -118,9 +118,12 @@ func (p *HAProxyLoadBalancer) GenerateProxyConfig(containers []types.Container) 
 		}
 
 		container_name := c.Names[0][1:]
+		name_adjust_parts := strings.Split(container_name, "/")
+		name_adjust := name_adjust_parts[len(name_adjust_parts)-1]
 		up := &Upstream{
 			Addr:          addr,
 			Container:     container_name,
+			Container_Adjusted: name_adjust,
 			CheckInterval: healthCheckInterval,
 		}
 

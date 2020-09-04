@@ -25,6 +25,7 @@ type Host struct {
 
 type Upstream struct {
 	Container     string
+	Container_Adjusted       string 
 	Addr          string
 	CheckInterval int
 }
