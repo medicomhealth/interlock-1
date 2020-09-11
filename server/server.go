@@ -104,7 +104,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 			if s.cfg.PollInterval != "" {
 				log.Infof("using polling for container updates: interval=%s", s.cfg.PollInterval)
 			} else {
-				log.Info("using event stream")
+                                log.Info("using event stream")
 				ctx, cancel := context.WithCancel(context.Background())
 				evtChan, evtErrChan := client.Events(ctx, types.EventsOptions{})
 				defer cancel()
@@ -112,7 +112,9 @@ func NewServer(cfg *config.Config) (*Server, error) {
 				go func(ch <-chan error) {
 					for {
 						err := <-ch
-						eventErrChan <- err
+						if err != nil {
+							eventErrChan <- err
+						}
 					}
 				}(evtErrChan)
 
@@ -185,7 +187,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 			for _, ext := range s.extensions {
 				log.Debugf("notifying extension: %s", ext.Name())
 				if err := ext.HandleEvent(e); err != nil {
-					errChan <- err
+					//errChan <- err
 					continue
 				}
 			}
@@ -211,6 +213,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 
 func (s *Server) waitForSwarm() {
 	log.Info("waiting for event stream to become ready")
+	time.Sleep(time.Second * 1)
 
 	for {
 		if _, err := s.client.Info(context.Background()); err == nil {

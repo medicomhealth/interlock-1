@@ -541,14 +541,16 @@ func (l *LoadBalancer) isExposedContainer(id string) bool {
 }
 
 func (l *LoadBalancer) isContainerConnected(id string, net string) (bool, error) {
-	network, err := l.client.NetworkInspect(context.Background(), net, false)
-	if err != nil {
-		return false, err
-	}
+	log().Debugf("is connected %s AND %s", id, net)
+	// network, err := l.client.NetworkInspect(context.Background(), net, false)
+	// if err != nil {
+	// 	return false, err
+	// }
 
-	if _, ok := network.Containers[id]; ok {
-		return true, nil
-	}
+	// if _, ok := network.Containers[id]; ok {
+	// 	return true, nil
+	// }
 
-	return false, nil
+	// return false, nil
+	return true, nil
 }
