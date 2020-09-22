@@ -73,6 +73,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 			// error from swarm event stream; attempt to restart
 			log.Error("event stream fail; attempting to reconnect")
 			s.waitForSwarm()
+			time.Sleep(time.Second * 15)
 			restartChan <- true
 		}
 	}()
@@ -213,17 +214,18 @@ func NewServer(cfg *config.Config) (*Server, error) {
 
 func (s *Server) waitForSwarm() {
 	log.Info("waiting for event stream to become ready")
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 10)
 
 	for {
 		if _, err := s.client.Info(context.Background()); err == nil {
 			log.Info("event stream appears to have recovered; restarting handler")
+			time.Sleep(time.Second * 10)
 			return
 		}
 
 		log.Debug("event stream not yet ready; retrying")
 
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second * 5)
 	}
 }
 

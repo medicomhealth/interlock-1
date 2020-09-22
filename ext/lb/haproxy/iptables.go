@@ -62,7 +62,7 @@ func (p *HAProxyLoadBalancer) dropSYN() error {
 	}
 
 	// pause to make clients drop
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 2)
 
 	return nil
 }

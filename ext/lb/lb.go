@@ -482,7 +482,7 @@ func (l *LoadBalancer) proxyContainersToRestart(nodes []types.Container, proxyCo
 		return proxyContainers
 	}
 
-	log().Debugf("calculating restart across interlock nodes: num=%d", numNodes)
+	log().Debugf("calculating restart across interlock nodes: proxyContainers=%d, num=%d", len(proxyContainers), numNodes)
 
 	sub := len(proxyContainers) / numNodes
 
