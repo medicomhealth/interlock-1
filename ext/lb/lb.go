@@ -411,6 +411,7 @@ func (l *LoadBalancer) SaveConfig(configPath string, cfg interface{}, proxyConta
 }
 
 func (l *LoadBalancer) HandleEvent(event *events.Message) error {
+	log().Debugf("HandleEvent. Event: %s and %s", event.Status, event.Action)
 	reload := false
 
 	// container event
@@ -542,15 +543,42 @@ func (l *LoadBalancer) isExposedContainer(id string) bool {
 
 func (l *LoadBalancer) isContainerConnected(id string, net string) (bool, error) {
 	log().Debugf("is connected %s AND %s", id, net)
-	// network, err := l.client.NetworkInspect(context.Background(), net, false)
-	// if err != nil {
-	// 	return false, err
-	// }
 
-	// if _, ok := network.Containers[id]; ok {
-	// 	return true, nil
-	// }
+	info, err := l.client.ContainerInspect(context.Background(), id)
 
-	// return false, nil
-	return true, nil
+	if (info.NetworkSettings == nil) {
+		log().Debug("No Network Found at all")
+		return false, nil
+	}
+
+	network_names := make([]string, 0, len(info.NetworkSettings.Networks))
+	for k := range info.NetworkSettings.Networks {
+		network_names = append(network_names, k)
+	}
+
+
+    // log().Debug(Keys(info.NetworkSettings.Networks))
+    // log().Debug(Keys(info.NetworkSettings.Networks)[0])
+
+	network, err := l.client.NetworkInspect(context.Background(), info.Node.Name+"/" + network_names[0], false)
+	if err != nil {
+		return false, nil
+	}
+
+	if _, ok := network.Containers[id]; ok {
+		return true, nil
+	}
+
+	return false, nil
+	//return true, nil
+}
+
+func Keys(m map[int]interface{}) []interface{} {
+    keys := make([]interface{}, len(m))
+    i := 0
+    for k := range m {
+        keys[i] = k
+        i++
+    }
+    return keys
 }

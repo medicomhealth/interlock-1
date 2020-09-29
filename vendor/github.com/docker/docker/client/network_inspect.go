@@ -28,14 +28,16 @@ func (cli *Client) NetworkInspectWithRaw(ctx context.Context, networkID string, 
 	if verbose {
 		query.Set("verbose", "true")
 	}
+	
 	resp, err = cli.get(ctx, "/networks/"+networkID, query, nil)
+	defer ensureReaderClosed(resp)
+
 	if err != nil {
 		if resp.statusCode == http.StatusNotFound {
 			return networkResource, nil, networkNotFoundError{networkID}
 		}
 		return networkResource, nil, err
 	}
-	defer ensureReaderClosed(resp)
 
 	body, err := ioutil.ReadAll(resp.body)
 	if err != nil {
